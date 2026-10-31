@@ -2,6 +2,35 @@
 
 Repository for a four-part technical assessment. Task 1 is complete. Task 2 has a local HTTP gateway, a mock downstream server, demo Bearer token authentication, and tool-level authorization.
 
+| Task | Status | Independent guide |
+| --- | --- | --- |
+| 1 — Customer support MCP server | Complete | [Task 1 README](task1_mcp_server/README.md) |
+| 2 — MCP security gateway proxy | Complete | [Task 2 README](task2_security_gateway/README.md) |
+| 3 — Streaming LLM PII redaction | Not started | — |
+| 4 — Rate limiting, provider fallback, and SQLite | Not started | — |
+
+Each completed task has its own Python package, requirements file, entry points, and tests. Neither task imports application code from the other.
+
+```text
+ai-field-developer-assessment/
+├── task1_mcp_server/          # stdio MCP server, schemas, demo, README, requirements
+├── task2_security_gateway/   # HTTP gateway, auth, authorization, mock, README, requirements
+├── tests/                    # test_task1.py and test_task2.py
+├── requirements.txt          # install both completed tasks together
+├── README.md
+├── pytest.ini
+└── .gitignore
+```
+
+From the repository root, install every completed task and run the full suite with an active Python 3.11+ virtual environment:
+
+```powershell
+python -m pip install -r requirements.txt
+python -m pytest -q
+```
+
+For task-specific installs and commands, use the linked guides above. Tasks 3 and 4 have no implementation yet.
+
 ## Task 1: Customer Support MCP Server
 
 The MCP server exposes exactly two tools over **stdio** using the **official Python MCP SDK v2**:
@@ -31,13 +60,13 @@ Key behaviors:
 From the repository root:
 
 ```powershell
-py -3.11 -m venv .venv
+py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 python -m pytest -q
 ```
 
-If `py -3.11` is unavailable, use `python -m venv .venv` with Python 3.11+.
+The commands above were verified with Python 3.12. If `py -3.12` is unavailable, use `python -m venv .venv` with Python 3.11+.
 
 ## Set up (macOS/Linux)
 

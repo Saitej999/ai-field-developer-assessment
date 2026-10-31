@@ -1,6 +1,6 @@
 # AI Field Developer / Solutions Engineer Assessment
 
-Repository for a four-part technical assessment. **Task 1** is implemented in this initial version. Tasks 2–4 can be added as separate directories later.
+Repository for a four-part technical assessment. Task 1 is complete. Task 2 has a local HTTP gateway, a mock downstream server, demo Bearer token authentication, and tool-level authorization.
 
 ## Task 1: Customer Support MCP Server
 
@@ -84,14 +84,36 @@ Expected invalid parameters: `{"customer_id":"BAD-ID"}` -> JSON-RPC error code `
 - Validation is applied in **both** the published tool input schema and the actual tool handler.
 - An unknown tool is rejected with `-32602`.
 - This implementation deliberately uses mock data and a simulated refund because the assessment does not require real downstream integration.
-- No HTTP listener is needed for Task 1. Task 2 will implement HTTP gateway behavior separately.
+- No HTTP listener is needed for Task 1. Task 2 implements HTTP gateway behavior separately.
 
 ## Roadmap
 
 - [x] Task 1 — Strict MCP tools + stdio transport
-- [ ] Task 2 — MCP security gateway
+- [x] Task 2 — MCP security gateway (HTTP/JSON-RPC proxy, demo authentication, and `admin_` RBAC)
 - [ ] Task 3 — Streaming LLM PII redaction
 - [ ] Task 4 — Rate limiting + provider fallback + SQLite
+
+## Task 2: Local HTTP/JSON-RPC security gateway
+
+`task2_security_gateway/mock_server.py` is a local FastAPI mock server. Its `/mcp` POST endpoint lists `get_customer_record` and `admin_reset_key` for `tools/list` and returns simulated results for `tools/call`. The administrative handler never changes a real credential. This is a test double, not a complete MCP HTTP server.
+
+`task2_security_gateway/gateway.py` is a separate FastAPI app. Its `/mcp` POST endpoint accepts JSON-RPC 2.0 requests and forwards `tools/list` and authorized `tools/call` requests to the mock server using asynchronous HTTPX. Valid downstream JSON-RPC responses are returned byte for byte, including the original request ID. Downstream failures return safe JSON-RPC errors.
+
+`task2_security_gateway/auth.py` reads an optional HTTP Bearer token and stores the resolved role in gateway request state. **The tokens `admin-demo-token` (admin) and `viewer-demo-token` (viewer) are public mock identities for local testing only.** Missing, malformed, and unknown credentials have no role. Client-supplied role headers are ignored. Tokens and roles are not included in JSON-RPC responses or forwarded to the mock server.
+
+`task2_security_gateway/authorization.py` permits calls to tools whose names start with `admin_` only for a recognized admin token. The gateway returns JSON-RPC error `-32001` (`Unauthorized Tool Call`) for all other callers and does not contact the downstream server. Ordinary tool calls and `tools/list` do not require an admin role. Malformed `tools/call` parameters return `-32602` and are not forwarded. Tool-call notifications without a request ID receive no response and are not executed.
+
+To run both services locally, open two terminals in the repository root with the virtual environment active:
+
+```powershell
+python -m uvicorn task2_security_gateway.mock_server:app --host 127.0.0.1 --port 8001
+```
+
+```powershell
+python -m uvicorn task2_security_gateway.gateway:app --host 127.0.0.1 --port 8000
+```
+
+Send `tools/list` requests to `http://127.0.0.1:8000/mcp`. The gateway forwards to `http://127.0.0.1:8001/mcp` by default. Both addresses bind only to the local computer. Run `python -m pytest -q` to check Tasks 1 and 2 together; the Task 2 tests use in-memory HTTP transports and do not start listening services.
 
 ## Important
 

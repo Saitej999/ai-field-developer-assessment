@@ -1,23 +1,26 @@
 # AI Field Developer / Solutions Engineer Assessment
 
-Repository for a four-part technical assessment. Tasks 1, 2, and 3 are complete. Task 4 has not started.
+Four independent Python projects for an AI Field Developer / Solutions Engineer technical assessment. All four tasks are implemented and verified with local mock data and services.
 
 | Task | Status | Independent guide |
 | --- | --- | --- |
 | 1 — Customer support MCP server | Complete | [Task 1 README](task1_mcp_server/README.md) |
 | 2 — MCP security gateway proxy | Complete | [Task 2 README](task2_security_gateway/README.md) |
 | 3 — Streaming LLM PII redaction | Complete | [Task 3 README](task3_streaming_guardrails/README.md) |
-| 4 — Rate limiting, provider fallback, and SQLite | Not started | — |
+| 4 — Rate limiting, provider fallback, and SQLite | Complete | [Task 4 README](task4_model_router/README.md) |
 
-Each implemented task has its own Python package, requirements file, entry points, and tests. The tasks do not import application code from one another.
+Each task has its own Python package, requirements file, entry points, guide, and tests. No task imports another task's application code. The architecture progresses from a stdio MCP server (Task 1), to an HTTP/JSON-RPC security proxy (Task 2), to an SSE redaction gateway (Task 3), and finally to a SQLite-backed completion gateway with provider fallback (Task 4).
+
+**Stack:** Python 3.11+, official MCP Python SDK, Pydantic, FastAPI, HTTPX, Uvicorn, standard-library SQLite, and Pytest. All providers, identities, customer records, and administrative actions are local simulations; no paid API or external credential is required.
 
 ```text
 ai-field-developer-assessment/
 ├── task1_mcp_server/          # stdio MCP server, schemas, demo, README, requirements
 ├── task2_security_gateway/   # HTTP gateway, auth, authorization, mock, README, requirements
 ├── task3_streaming_guardrails/ # SSE gateway, mock provider, parser, README, requirements
-├── tests/                    # task-specific tests, including test_task3_pii.py
-├── requirements.txt          # install implemented tasks together
+├── task4_model_router/         # SQLite limiter, async router, FastAPI gateway, mocks
+├── tests/                    # independent task test modules
+├── requirements.txt          # install all tasks together
 ├── README.md
 ├── pytest.ini
 └── .gitignore
@@ -30,7 +33,7 @@ python -m pip install -r requirements.txt
 python -m pytest -q
 ```
 
-For task-specific installs and commands, use the linked guides above. Task 3 redacts supported PII in live streams; Task 4 has no implementation yet.
+Each linked task guide has independent installation, local execution, and test commands. From the repository root, the final verified suite has **213 passed, 0 failed**: Task 1 (18), Task 2 (53), Task 3 (65), and Task 4 (77).
 
 ## Task 1: Customer Support MCP Server
 
@@ -121,7 +124,7 @@ Expected invalid parameters: `{"customer_id":"BAD-ID"}` -> JSON-RPC error code `
 - [x] Task 1 — Strict MCP tools + stdio transport
 - [x] Task 2 — MCP security gateway (HTTP/JSON-RPC proxy, demo authentication, and `admin_` RBAC)
 - [x] Task 3 — Streaming LLM PII redaction (streaming gateway and stateful redaction)
-- [ ] Task 4 — Rate limiting + provider fallback + SQLite
+- [x] Task 4 — SQLite token limiter, provider fallback, and FastAPI gateway
 
 ## Task 2: Local HTTP/JSON-RPC security gateway
 
@@ -143,7 +146,15 @@ python -m uvicorn task2_security_gateway.mock_server:app --host 127.0.0.1 --port
 python -m uvicorn task2_security_gateway.gateway:app --host 127.0.0.1 --port 8000
 ```
 
-Send `tools/list` requests to `http://127.0.0.1:8000/mcp`. The gateway forwards to `http://127.0.0.1:8001/mcp` by default. Both addresses bind only to the local computer. Run `python -m pytest -q` to check Tasks 1 and 2 together; the Task 2 tests use in-memory HTTP transports and do not start listening services.
+Send `tools/list` requests to `http://127.0.0.1:8000/mcp`. The gateway forwards to `http://127.0.0.1:8001/mcp` by default. Both addresses bind only to the local computer. The Task 2 tests use in-memory HTTP transports and do not start listening services.
+
+## Task 3: Streaming LLM PII guardrails
+
+The [Task 3 guide](task3_streaming_guardrails/README.md) runs a local mock LLM provider and a separate FastAPI SSE gateway. The gateway parses streamed events and redacts supported email, US SSN, and Luhn-valid card patterns before sending text to the client. Stateful buffering detects values split across events while bounding candidate memory. Run `python -m pytest -q tests/test_task3.py tests/test_task3_pii.py tests/test_task3_streaming_redaction.py tests/test_task3_final_verification.py` to test this task independently. The guide documents localhost run commands, measured latency, and detection limits.
+
+## Task 4: Rate limiting and model fallback
+
+The [Task 4 guide](task4_model_router/README.md) runs a local FastAPI completion gateway with mock primary and backup providers. An on-disk SQLite database enforces 50,000 reserved tokens per tenant over a 60-second sliding window. Primary HTTP 429 or a three-second timeout triggers one backup attempt; tenant quota rejection occurs before any provider call. Run `python -m pytest -q tests/test_task4_rate_limiter.py tests/test_task4_router.py tests/test_task4_gateway.py` to test this task independently. The guide covers setup, localhost commands, accounting and concurrency, error formats, and mock-security limits.
 
 ## Important
 

@@ -23,3 +23,14 @@ Thumbs.db
 .coverage
 htmlcov/
 *.log
+
+# Local SQLite usage databases and WAL sidecars
+*.sqlite
+*.sqlite3
+*.db
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+*.db-wal
+*.db-shm

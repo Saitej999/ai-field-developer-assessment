@@ -1,35 +1,36 @@
 # AI Field Developer / Solutions Engineer Assessment
 
-Repository for a four-part technical assessment. Task 1 is complete. Task 2 has a local HTTP gateway, a mock downstream server, demo Bearer token authentication, and tool-level authorization.
+Repository for a four-part technical assessment. Tasks 1, 2, and 3 are complete. Task 4 has not started.
 
 | Task | Status | Independent guide |
 | --- | --- | --- |
 | 1 — Customer support MCP server | Complete | [Task 1 README](task1_mcp_server/README.md) |
 | 2 — MCP security gateway proxy | Complete | [Task 2 README](task2_security_gateway/README.md) |
-| 3 — Streaming LLM PII redaction | Not started | — |
+| 3 — Streaming LLM PII redaction | Complete | [Task 3 README](task3_streaming_guardrails/README.md) |
 | 4 — Rate limiting, provider fallback, and SQLite | Not started | — |
 
-Each completed task has its own Python package, requirements file, entry points, and tests. Neither task imports application code from the other.
+Each implemented task has its own Python package, requirements file, entry points, and tests. The tasks do not import application code from one another.
 
 ```text
 ai-field-developer-assessment/
 ├── task1_mcp_server/          # stdio MCP server, schemas, demo, README, requirements
 ├── task2_security_gateway/   # HTTP gateway, auth, authorization, mock, README, requirements
-├── tests/                    # test_task1.py and test_task2.py
-├── requirements.txt          # install both completed tasks together
+├── task3_streaming_guardrails/ # SSE gateway, mock provider, parser, README, requirements
+├── tests/                    # task-specific tests, including test_task3_pii.py
+├── requirements.txt          # install implemented tasks together
 ├── README.md
 ├── pytest.ini
 └── .gitignore
 ```
 
-From the repository root, install every completed task and run the full suite with an active Python 3.11+ virtual environment:
+From the repository root, install all implemented tasks and run the full suite with an active Python 3.11+ virtual environment:
 
 ```powershell
 python -m pip install -r requirements.txt
 python -m pytest -q
 ```
 
-For task-specific installs and commands, use the linked guides above. Tasks 3 and 4 have no implementation yet.
+For task-specific installs and commands, use the linked guides above. Task 3 redacts supported PII in live streams; Task 4 has no implementation yet.
 
 ## Task 1: Customer Support MCP Server
 
@@ -119,7 +120,7 @@ Expected invalid parameters: `{"customer_id":"BAD-ID"}` -> JSON-RPC error code `
 
 - [x] Task 1 — Strict MCP tools + stdio transport
 - [x] Task 2 — MCP security gateway (HTTP/JSON-RPC proxy, demo authentication, and `admin_` RBAC)
-- [ ] Task 3 — Streaming LLM PII redaction
+- [x] Task 3 — Streaming LLM PII redaction (streaming gateway and stateful redaction)
 - [ ] Task 4 — Rate limiting + provider fallback + SQLite
 
 ## Task 2: Local HTTP/JSON-RPC security gateway

@@ -1,0 +1,25 @@
+# Local Python environments and bytecode
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Credentials, local config and operating-system files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+.DS_Store
+Thumbs.db
+
+# Temporary results
+.coverage
+htmlcov/
+*.log

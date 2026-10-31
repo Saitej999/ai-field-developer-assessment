@@ -55,7 +55,7 @@ From the repository root, use Python 3.11 or newer and an active virtual environ
 
 ```powershell
 python -m pip install -r task4_model_router/requirements.txt
-python -m pytest -q tests/test_task4_rate_limiter.py tests/test_task4_router.py tests/test_task4_gateway.py
+python -m pytest task4_model_router/tests/ -v
 ```
 
 Example:

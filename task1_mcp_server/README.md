@@ -25,7 +25,7 @@ Use Python 3.11 or newer. Run these commands **from the repository root** in Win
 py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r task1_mcp_server/requirements.txt
-python -m pytest -q tests/test_task1.py
+python -m pytest task1_mcp_server/tests/ -v
 ```
 
 The commands above were verified with Python 3.12. If `py -3.12` is unavailable, create the environment with another installed Python 3.11+ interpreter. The Task 1 requirements file contains only its runtime and test dependencies; Task 2 does not need to be installed or started.

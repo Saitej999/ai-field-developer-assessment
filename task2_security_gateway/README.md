@@ -23,7 +23,7 @@ Use Python 3.11 or newer. Run these commands **from the repository root** in Win
 py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r task2_security_gateway/requirements.txt
-python -m pytest -q tests/test_task2.py
+python -m pytest task2_security_gateway/tests/ -v
 ```
 
 The commands above were verified with Python 3.12. If `py -3.12` is unavailable, create the environment with another installed Python 3.11+ interpreter. Task 1 does not need to be installed or started to run the gateway or its tests.

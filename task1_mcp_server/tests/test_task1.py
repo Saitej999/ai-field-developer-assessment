@@ -103,7 +103,7 @@ async def test_unknown_tool_is_protocol_error():
 async def test_real_stdio_subprocess_transport():
     # Proves handshake and tool calls work over an actual stdin/stdout subprocess.
     # Any stray stdout print would corrupt protocol parsing and fail this test.
-    root = Path(__file__).resolve().parents[1]
+    root = Path(__file__).resolve().parents[2]
     params = StdioServerParameters(
         command=sys.executable,
         args=["-m", "task1_mcp_server.server"],

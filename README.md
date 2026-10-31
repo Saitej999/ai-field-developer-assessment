@@ -15,11 +15,10 @@ Each task has its own Python package, requirements file, entry points, guide, an
 
 ```text
 ai-field-developer-assessment/
-├── task1_mcp_server/          # stdio MCP server, schemas, demo, README, requirements
-├── task2_security_gateway/   # HTTP gateway, auth, authorization, mock, README, requirements
-├── task3_streaming_guardrails/ # SSE gateway, mock provider, parser, README, requirements
-├── task4_model_router/         # SQLite limiter, async router, FastAPI gateway, mocks
-├── tests/                    # independent task test modules
+├── task1_mcp_server/          # stdio MCP server, guide, requirements, tests/
+├── task2_security_gateway/   # HTTP/JSON-RPC proxy, guide, requirements, tests/
+├── task3_streaming_guardrails/ # SSE redaction gateway, guide, requirements, tests/
+├── task4_model_router/       # SQLite limiter and router, guide, requirements, tests/
 ├── requirements.txt          # install all tasks together
 ├── README.md
 ├── pytest.ini
@@ -150,11 +149,11 @@ Send `tools/list` requests to `http://127.0.0.1:8000/mcp`. The gateway forwards 
 
 ## Task 3: Streaming LLM PII guardrails
 
-The [Task 3 guide](task3_streaming_guardrails/README.md) runs a local mock LLM provider and a separate FastAPI SSE gateway. The gateway parses streamed events and redacts supported email, US SSN, and Luhn-valid card patterns before sending text to the client. Stateful buffering detects values split across events while bounding candidate memory. Run `python -m pytest -q tests/test_task3.py tests/test_task3_pii.py tests/test_task3_streaming_redaction.py tests/test_task3_final_verification.py` to test this task independently. The guide documents localhost run commands, measured latency, and detection limits.
+The [Task 3 guide](task3_streaming_guardrails/README.md) runs a local mock LLM provider and a separate FastAPI SSE gateway. The gateway parses streamed events and redacts supported email, US SSN, and Luhn-valid card patterns before sending text to the client. Stateful buffering detects values split across events while bounding candidate memory. Run `python -m pytest task3_streaming_guardrails/tests/ -v` to test this task independently. The guide documents localhost run commands, measured latency, and detection limits.
 
 ## Task 4: Rate limiting and model fallback
 
-The [Task 4 guide](task4_model_router/README.md) runs a local FastAPI completion gateway with mock primary and backup providers. An on-disk SQLite database enforces 50,000 reserved tokens per tenant over a 60-second sliding window. Primary HTTP 429 or a three-second timeout triggers one backup attempt; tenant quota rejection occurs before any provider call. Run `python -m pytest -q tests/test_task4_rate_limiter.py tests/test_task4_router.py tests/test_task4_gateway.py` to test this task independently. The guide covers setup, localhost commands, accounting and concurrency, error formats, and mock-security limits.
+The [Task 4 guide](task4_model_router/README.md) runs a local FastAPI completion gateway with mock primary and backup providers. An on-disk SQLite database enforces 50,000 reserved tokens per tenant over a 60-second sliding window. Primary HTTP 429 or a three-second timeout triggers one backup attempt; tenant quota rejection occurs before any provider call. Run `python -m pytest task4_model_router/tests/ -v` to test this task independently. The guide covers setup, localhost commands, accounting and concurrency, error formats, and mock-security limits.
 
 ## Important
 

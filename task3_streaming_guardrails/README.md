@@ -28,7 +28,7 @@ Use Python 3.11 or newer. From the repository root in Windows PowerShell:
 py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r task3_streaming_guardrails/requirements.txt
-python -m pytest -q tests/test_task3.py tests/test_task3_pii.py tests/test_task3_streaming_redaction.py tests/test_task3_final_verification.py
+python -m pytest task3_streaming_guardrails/tests/ -v
 ```
 
 Run `python -m pytest -q` from the root to test all implemented tasks together. Task 3 has its own requirements file and imports no Task 1 or Task 2 application modules.
